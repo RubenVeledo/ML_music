@@ -1,0 +1,3 @@
+svm__C: 10
+svm__gamma: scale
+svm__kernel: rbf

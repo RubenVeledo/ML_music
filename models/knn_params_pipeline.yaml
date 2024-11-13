@@ -1,0 +1,3 @@
+knn__n_neighbors: 10
+knn__p: 1
+knn__weights: distance
