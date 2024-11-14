@@ -2,7 +2,6 @@ import streamlit as st
 import pickle
 import numpy as np
 
-#Cargar el modelo entrenado
 with open('basicmodel2.pkl', 'rb') as file:
     model_2 = pickle.load(file)
 
@@ -10,11 +9,10 @@ with open('basicmodel2.pkl', 'rb') as file:
 decade_mapping = {
     0: '50s-60s',
     1: '70s-80s',
-    2: '90s-00s'
-}
+    2: '90s-00s'}
 
-#Título de la app
-st.title('Predicción de Década de Canciones')
+#Título
+st.title('Predicción de década de danciones')
 st.write('Ingresa las características de una canción para predecir a qué década pertenece.')
 
 #Widgets para entrada de datos del usuario
@@ -32,20 +30,16 @@ mode = st.selectbox('Mode (Escala)', [0, 1], format_func=lambda x: 'Mayor' if x 
 key = st.slider('Key (Nota musical)', 0, 11, 5) 
 popularity = st.slider('Popularity', 0, 100, 50)
 
- 
 
-
-#Crear el array de entrada para el modelo
+#Array de entrada para el modelo
 datos_entrada = np.array([[duration_ms, acousticness, danceability, energy, instrumentalness,
                            liveness, loudness, speechiness, tempo, valence, mode,
                            key, popularity]])
 
-#Hacer la predicción y mostrar el resultado
+#Predicción
 if st.button('Predecir'):
     prediccion = model_2.predict(datos_entrada)
     st.write(f'La canción podría incluirse en la playlist: {prediccion[0]}')
-    #decada_predicha = decade_mapping.get(prediccion[0], 'Desconocida')
-    #st.write(f'La canción probablemente pertenece a la década: {decada_predicha}')
 
 
 
