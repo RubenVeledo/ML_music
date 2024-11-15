@@ -12,7 +12,7 @@ decade_mapping = {
     2: '90s-00s'}
 
 #Título
-st.title('Predicción de década de danciones')
+st.title('¿A qué época podría pertenecer una canción actual?')
 st.write('Ingresa las características de una canción para predecir a qué década pertenece.')
 
 #Widgets para entrada de datos del usuario
