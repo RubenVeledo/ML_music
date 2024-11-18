@@ -4,33 +4,71 @@ import numpy as np
 import json
 import pandas as pd
 import plotly.express as px
+from fpdf import FPDF
 
-#Modelo entrenado
+# Modelo entrenado
 with open('../models/finalmodel.pkl', 'rb') as file:
     best_model_xgb = pickle.load(file)
 
-#Normalización de canciones actuales (2020s)
+# Normalización de canciones actuales (2020s)
 with open("current_decade_stats.json", "r") as file:
     current_decade_stats = json.load(file)
 
 current_decade_mean = current_decade_stats["mean"]
 current_decade_std = current_decade_stats["std"]
 
-#Función para normalizar la variable popularity
+# Función para normalizar la variable popularity
 def normalize_popularity_current(popularity):
     return (popularity - current_decade_mean) / current_decade_std
 
-#Diccionario de mapeo para convertir el número de la predicción en décadas
+# Función para convertir el DataFrame a CSV
+def convert_df(df):
+    return df.to_csv(index=False).encode('utf-8')
+
+# Función para limpiar el texto del PDF
+def clean_text(text):
+    if isinstance(text, str):
+        return text.encode('latin-1', 'ignore').decode('latin-1')
+    return text
+
+# Función para crear un informe PDF
+def generar_informe_pdf(data):
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    
+    # Título
+    pdf.set_font("Arial", style="B", size=16)
+    pdf.cell(200, 10, txt="Informe de Predicciones", ln=True, align="C")
+    pdf.ln(10)
+
+    # Agregar contenido al PDF
+    pdf.set_font("Arial", size=12)
+    for index, row in data.iterrows():
+        pdf.cell(0, 10, txt=f"Canción: {clean_text(row['name'])}", ln=True)
+        pdf.cell(0, 10, txt=f"Artista: {clean_text(row['artists'])}", ln=True)
+        pdf.cell(0, 10, txt=f"Época Predicha: {clean_text(row['Época'])}", ln=True)
+        pdf.cell(0, 10, txt=f"Probabilidades: 50s-60s={row['prob_50s_60s']:.2%}, "
+                            f"70s-80s={row['prob_70s_80s']:.2%}, "
+                            f"90s-00s={row['prob_90s_00s']:.2%}", ln=True)
+        pdf.ln(10)
+    
+    # Guardar el PDF en memoria
+    pdf_output = pdf.output(dest="S").encode("latin1")
+    return pdf_output
+
+# Diccionario de mapeo para convertir el número de la predicción en décadas
 decade_mapping = {
     0: '50s-60s',
     1: '70s-80s',
     2: '90s-00s'} 
 
-#Título y descripción de la app
+# Título y descripción de la app
 st.title('¿A qué época podría pertenecer una canción actual?')
 st.write('Explora qué canciones actuales tienen la esencia de décadas pasadas.')
 
-#Pestañas
+# Pestañas
 tab1, tab2 = st.tabs(["Predicción individual", "Predicciones en lote"])
 
 # **Tab 1: Predicción Individual**
@@ -73,6 +111,11 @@ with tab1:
             '50s-60s': '#85C1E9',  
             '70s-80s': '#F1948A',  
             '90s-00s': '#82E0AA',}
+        
+        image_mapping = {
+            '50s-60s': 'img/grease.jpg',  
+            '70s-80s': 'img/locomia.jpg',  
+            '90s-00s': 'img/spice.jpg'}
 
         # Gráfico de barras con épocas como etiquetas y texto personalizado
         fig = px.bar(prob_df, x='Época', y='Probabilidad', 
@@ -94,7 +137,14 @@ with tab1:
 
         st.plotly_chart(fig)
 
-# **Tab 2: Predicciones en Lote**
+         # Mostrar imagen correspondiente a la década
+        image_path = image_mapping.get(decada_predicha, None)
+        if image_path:
+            st.image(image_path, caption=f"Época: {decada_predicha}", use_container_width=True)
+        else:
+            st.write("No hay imagen disponible para esta época.")
+
+# **Tab 2: Predicciones en lote**
 with tab2:
     st.subheader("Predicciones en lote")
     # Subida de archivo CSV
@@ -145,11 +195,10 @@ with tab2:
             st.write("Resultados de las predicciones:")
             st.dataframe(styled_data, use_container_width=True)
 
-            # Botón para descargar resultados
+            # Botón para generar CSV
             def convert_df(df):
                 return df.to_csv(index=False).encode('utf-8')
 
-            # Archivo descargable con toda la información
             csv = convert_df(data[output_columns])
 
             st.download_button(
@@ -158,3 +207,14 @@ with tab2:
                 file_name='predicciones_canciones.csv',
                 mime='text/csv',
             )
+
+            # Botón para generar PDF
+            if st.button("Generar Informe en PDF"):
+                pdf_data = generar_informe_pdf(data[output_columns])
+                st.download_button(
+                    label="Descargar Informe en PDF",
+                    data=pdf_data,
+                    file_name="informe_predicciones.pdf",
+                    mime="application/pdf",
+                )
+
