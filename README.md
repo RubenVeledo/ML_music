@@ -19,7 +19,29 @@ Con una interfaz interactiva desarrollada en Streamlit, cualquier usuario puede 
 
 ### Instalación y uso
 
+📁 Ecos_del_pasado
+├── 📁 data                # Dataset utilizado
+├── 📁 models              # Modelos entrenados
+├── 📁 notebooks           # Notebooks de experimentación
+├── 📁 app_streamlit       # Código de la aplicación Streamlit
+├── 📁 src                 # Scripts 
+├── README.md              # Este archivo
+
 ### Enfoque técnico
+
+##### Dataset
+
+**Descripción:** Datos de canciones desde 1921 hasta 2020, ampliado con canciones actuales mediante extracción de más de 300 canciones desde 2020 hasta la actualidad a través de la API de Spotify.
+
+**Preprocesamiento:** EDA y feature engineering.
+
+##### Modelos Utilizados
+
+**Algoritmos utilizados:** 
+- Modelos supervisados. Decision Trees, Random Forest, XGBoost, SVM y KNN.
+- Modelos no supervisados (preprocesamiento). PCA, Kmeans.
+
+**Enfoque final:** El modelo seleccionado para la integración en la app es un XGBoost con 8 variables. Este modelo ha sido hiperparametrización para asegurar que generalice bien a datos nuevos.
 
 ### 🛠️ Construido con 🛠️
 
@@ -29,7 +51,32 @@ Con una interfaz interactiva desarrollada en Streamlit, cualquier usuario puede 
 [![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=flat-square&logo=jupyter&logoColor=white)](https://jupyter.org/)
 [![Matplotlib](https://img.shields.io/badge/Matplotlib-003b57?style=flat-square&logo=matplotlib&logoColor=white)](https://matplotlib.org/)
 [![Seaborn](https://img.shields.io/badge/Seaborn-9A1B30?style=flat-square&logo=seaborn&logoColor=white)](https://seaborn.pydata.org/)
+![Sklearn](https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
+![Streamli](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
+![Keras](https://img.shields.io/badge/Keras-D00000?style=for-the-badge&logo=Keras&logoColor=white)
 
 ### Resultados
+
+ **Reporte de Clasificación para datos no vistos**
+
+| Clase  | Precision | Recall | F1-Score | Support |
+|--------|-----------|--------|----------|---------|
+| 0      | 0.84      | 0.91   | 0.87     | 7990    |
+| 1      | 0.90      | 0.87   | 0.88     | 8000    |
+| 2      | 0.93      | 0.88   | 0.90     | 8000    |
+
+**Accuracy:** 0.89  
+**Macro Avg:**  
+- Precision: 0.89  
+- Recall: 0.89  
+- F1-Score: 0.89  
+
+**Weighted Avg:**  
+- Precision: 0.89  
+- Recall: 0.89  
+- F1-Score: 0.89  
+
+**Total Support:** 23990
+
 
 ### Créditos
