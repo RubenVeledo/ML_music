@@ -81,9 +81,7 @@ with tab1:
     energy = st.slider('Energy', 0.0, 1.0, 0.5)
     instrumentalness = st.slider('Instrumentalness', 0.0, 1.0, 0.0)
     loudness = st.number_input('Loudness (dB)', min_value=-60.0, max_value=0.0, value=-5.0)
-    speechiness = st.slider('Speechiness', 0.0, 1.0, 0.05)
     valence = st.slider('Valence', 0.0, 1.0, 0.5)
-    tempo = st.slider('Tempo (BPM)', 50.0, 300.0, 120.0, step=0.1)
     popularity = st.slider('Popularity', 0, 100, 50)
 
     #Normalización de popularity
@@ -91,7 +89,7 @@ with tab1:
 
     #Array de entrada para el modelo
     datos_entrada = np.array([[duration_ms, acousticness, danceability, energy, instrumentalness,
-                               loudness, speechiness, valence, tempo, popularity_normalized]])
+                               loudness, valence, popularity_normalized]])
 
     #Predicción
     if st.button('Predecir'):
@@ -156,8 +154,8 @@ with tab2:
 
         # Verificar si las columnas necesarias están en el archivo
         required_columns = ['name', 'artists', 'duration_ms', 'acousticness', 'danceability', 
-                            'energy', 'instrumentalness', 'loudness', 'speechiness', 'valence', 
-                            'tempo', 'popularity']
+                            'energy', 'instrumentalness', 'loudness', 'valence', 'popularity']
+        
         if not all(col in data.columns for col in required_columns):
             st.error(f"El archivo debe contener las siguientes columnas: {', '.join(required_columns)}")
         else:
@@ -166,8 +164,7 @@ with tab2:
 
             # Crear el array de entrada para el modelo
             features = ['duration_ms', 'acousticness', 'danceability', 'energy', 
-                        'instrumentalness', 'loudness', 'speechiness', 'valence', 
-                        'tempo', 'popularity_normalized']
+                        'instrumentalness', 'loudness', 'valence', 'popularity_normalized']
             X = data[features].values
 
             # Realizar predicciones
