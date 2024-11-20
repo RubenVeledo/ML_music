@@ -31,22 +31,17 @@ Con una interfaz interactiva desarrollada en Streamlit, cualquier usuario puede 
 
 <br><br>
 
-## 📦 Instalación y uso 📦
+## 📦 Estructura del repositorio 📦
 
 
 📁-- Ecos_del_pasado
    - 📁-- app_streamlit
-    |
    - 📁-- data
-    |
    - 📁-- docs
-    |
    - 📁-- img
-    |
    - 📁-- models
-    |
    - 📁-- notebooks
-    |
+     - 📁-- drafts
    - 📁-- src
    - 📃-- README.md
 
