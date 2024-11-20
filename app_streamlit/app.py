@@ -65,8 +65,22 @@ decade_mapping = {
     2: '90s-00s'} 
 
 # Título y descripción de la app
-st.title('¿A qué época podría pertenecer una canción actual?')
-st.write('Explora qué canciones actuales tienen la esencia de décadas pasadas.')
+st.markdown(
+    """
+    <h1 style="text-align: center; color: black;">🎵 Ecos del pasado 🎵</h1>
+    """, 
+    unsafe_allow_html=True
+)
+st.header('¿A qué época podría pertenecer una canción actual?')
+st.markdown("""
+Bienvenido a la aplicación de predicción de época para canciones actuales.
+Con esta herramienta, puedes:
+- **Ingresar manualmente los datos de una canción** para conocer a qué época podría pertenecer.
+- **Subir un archivo CSV con varias canciones** y obtener predicciones en lote.
+- **Explorar gráficas interactivas** y descargar informes detallados en **CSV o PDF**.
+
+¡Comienza explorando una canción o cargando tu archivo de música!
+""")
 
 # Pestañas
 tab1, tab2 = st.tabs(["Predicción individual", "Predicciones en lote"])
@@ -84,14 +98,14 @@ with tab1:
     valence = st.slider('Valence', 0.0, 1.0, 0.5)
     popularity = st.slider('Popularity', 0, 100, 50)
 
-    #Normalización de popularity
+    # Normalización de popularity
     popularity_normalized = normalize_popularity_current(popularity)
 
-    #Array de entrada para el modelo
+    # Array de entrada para el modelo
     datos_entrada = np.array([[duration_ms, acousticness, danceability, energy, instrumentalness,
                                loudness, valence, popularity_normalized]])
 
-    #Predicción
+    # Predicción
     if st.button('Predecir'):
         probabilidades = best_model_xgb.predict_proba(datos_entrada)
         prediccion = best_model_xgb.predict(datos_entrada)
@@ -120,17 +134,17 @@ with tab1:
                     title='Probabilidades por época',
                     labels={'Probabilidad': 'Probabilidad', 'Época': 'Época'},
                     text='Probabilidad',
-                    color='Época',  # Colorear las barras según la época
+                    color='Época',
                     color_discrete_map=custom_colors) 
 
-        #Texto en las barras estático e interactivo
+        # Texto en las barras estático e interactivo
         fig.update_traces(
             texttemplate='Probabilidad: %{y:.2%}', 
             textposition='outside',
             hovertemplate='<b>%{x}</b><br>Probabilidad: %{y:.2%}<extra></extra>'
         )
         
-        #Ajustar formato del eje Y
+        # Ajustar formato del eje Y
         fig.update_layout(yaxis=dict(tickformat=".0%"))
 
         st.plotly_chart(fig)
@@ -145,6 +159,51 @@ with tab1:
 # **Tab 2: Predicciones en lote**
 with tab2:
     st.subheader("Predicciones en lote")
+
+        # Información sobre el formato del archivo CSV
+    st.markdown("""
+    **Nota Importante:**  
+    El archivo CSV debe contener obligatoriamente las siguientes columnas para que el modelo pueda realizar las predicciones:
+    - `name` (Nombre de la canción)
+    - `artists` (Artista o grupo)
+    - `duration_ms` (Duración en milisegundos)
+    - `acousticness` (Nivel de acústica)
+    - `danceability` (Facilidad para bailar)
+    - `energy` (Energía de la canción)
+    - `instrumentalness` (Nivel de instrumentalidad)
+    - `loudness` (Volumen en decibelios)
+    - `valence` (Valencia o positividad de la canción)
+    - `popularity` (Popularidad de la canción)
+
+    Por favor, verifica que el archivo incluye todas estas columnas antes de cargarlo.
+    """)
+
+    # Generar un CSV de ejemplo
+    def crear_csv_ejemplo():
+        # Crear un DataFrame de ejemplo con columnas requeridas
+        ejemplo_data = pd.DataFrame({
+            'name': ['Song A', 'Song B', 'Song C'],
+            'artists': ['Artist A', 'Artist B', 'Artist C'],
+            'duration_ms': [210000, 180000, 200000],
+            'acousticness': [0.5, 0.7, 0.2],
+            'danceability': [0.8, 0.6, 0.7],
+            'energy': [0.9, 0.8, 0.85],
+            'instrumentalness': [0.0, 0.1, 0.2],
+            'loudness': [-5.0, -6.0, -4.5],
+            'valence': [0.6, 0.7, 0.5],
+            'popularity': [75, 65, 80]
+        })
+        return ejemplo_data.to_csv(index=False).encode('utf-8')
+
+    # Agregar un botón para descargar el CSV de ejemplo
+    st.download_button(
+        label="Descargar CSV de Ejemplo",
+        data=crear_csv_ejemplo(),
+        file_name="csv_ejemplo_canciones.csv",
+        mime="text/csv",
+        )
+
+
     # Subida de archivo CSV
     uploaded_file = st.file_uploader("Sube un archivo CSV con canciones", type=["csv"])
 
@@ -214,4 +273,43 @@ with tab2:
                     file_name="informe_predicciones.pdf",
                     mime="application/pdf",
                 )
+
+    with st.expander("¿Necesitas ayuda?"):
+            st.markdown("""
+            ### ¿Cómo cargar tu archivo CSV?
+            - Asegúrate de que el archivo contenga las siguientes columnas obligatorias:
+            - **`name`**: Nombre de la canción (texto).
+            - **`artists`**: Artista o grupo (texto).
+            - **`duration_ms`**: Duración de la canción en milisegundos (número entero, ej. 210000).
+            - **`acousticness`**: Nivel de acústica. Valor numérico entre 0 y 1 (ej. 0.56).
+            - **`danceability`**: Facilidad para bailar. Valor numérico entre 0 y 1 (ej. 0.72).
+            - **`energy`**: Energía de la canción. Valor numérico entre 0 y 1 (ej. 0.85).
+            - **`instrumentalness`**: Nivel de instrumentalidad. Valor numérico entre 0 y 1 (ej. 0.02).
+            - **`loudness`**: Volumen de la canción en decibelios negativos. Valor numérico (ej. -5.0).
+            - **`valence`**: Valencia (positividad) de la canción. Valor numérico entre 0 y 1 (ej. 0.67).
+            - **`popularity`**: Popularidad de la canción. Número entero entre 0 y 100 (ej. 85).
+
+            ### Detalles sobre el Formato de los Datos
+            - Los valores deben estar en el rango correcto según la variable:
+            - **`duration_ms`**: Tiempo en milisegundos. Verifica que no esté en segundos.
+            - **`acousticness`, `danceability`, `energy`, `instrumentalness`, `valence`**: Estos valores deben estar siempre entre 0 y 1.
+            - **`loudness`**: Valores negativos en decibelios. Ejemplo: -3.5 indica un volumen alto, -10.0 indica un volumen más bajo.
+            - **`popularity`**: Popularidad medida en porcentaje, representada como un número entero entre 0 y 100.
+
+            ### ¿Qué puedes hacer con esta app?
+            - Realizar predicciones individuales ingresando los datos manualmente.
+            - Subir un archivo CSV con varias canciones para obtener predicciones en lote.
+            - Descargar los resultados en formato **CSV** o **PDF**.
+
+            ### Problemas Comunes y Soluciones
+            - **Error: Falta una columna requerida**:
+            - Verifica que tu archivo CSV contiene todas las columnas mencionadas.
+            - **Error: Valores fuera del rango**:
+            - Revisa que los valores numéricos están en el rango correcto.
+            - **Error: El archivo no se carga**:
+            - Asegúrate de que el archivo está en formato CSV válido.
+
+            ### ¿Necesitas más ayuda?
+            Si tienes dudas o encuentras problemas al usar la app, contacta con el equipo técnico.
+            """)                
 
