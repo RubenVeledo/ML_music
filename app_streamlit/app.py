@@ -64,16 +64,14 @@ decade_mapping = {
     1: '70s-80s',
     2: '90s-00s'} 
 
+st.image("img/nostalgia.png", use_container_width=True)
+
 # Título y descripción de la app
-st.markdown(
-    """
-    <h1 style="text-align: center; color: black;">🎵 Ecos del pasado 🎵</h1>
-    """, 
-    unsafe_allow_html=True
-)
-st.header('¿A qué época podría pertenecer una canción actual?')
+
+#st.header('¿A qué época podría pertenecer una canción actual?')
 st.markdown("""
-Bienvenido a la aplicación de predicción de época para canciones actuales.
+nostalgIA es una solución basada en machine learning que permite responder a la pregunda: **¿a qué época podría pertenecer una canción actual?**.
+
 Con esta herramienta, puedes:
 - **Ingresar manualmente los datos de una canción** para conocer a qué época podría pertenecer.
 - **Subir un archivo CSV con varias canciones** y obtener predicciones en lote.
